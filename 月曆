@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>脩的戀人月曆 2026年2月</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #ffc0cb; padding: 20px; }
+    h1 { text-align: center; color: #900040; }
+    .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 10px; }
+    .day, .weekday { border: 1px solid #ff69b4; border-radius: 8px; padding: 5px; text-align: center; cursor: pointer; background: #fff0f5; }
+    .day:hover { background: #ffb6c1; }
+    .message, .mood { background: #ffe4e1; padding: 10px; border-radius: 12px; margin-top: 5px; }
+    .buttons { display: flex; gap: 5px; margin-top: 5px; }
+    button { flex: 1; padding: 8px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; color: #fff; }
+    .hug-btn { background: #ff69b4; }
+    .kiss-btn { background: #c71585; }
+    .memos input { width: 100%; margin-top: 2px; padding: 3px; border-radius: 6px; border: 1px solid #ff69b4; }
+    .add-memo { font-weight: bold; cursor: pointer; color: #900040; margin-left: 5px; }
+  </style>
+</head>
+<body>
+
+<h1>2026年2月 脩的戀人月曆</h1>
+
+<div class="calendar" id="weekdays">
+  <div class="weekday">Sun</div>
+  <div class="weekday">Mon</div>
+  <div class="weekday">Tue</div>
+  <div class="weekday">Wed</div>
+  <div class="weekday">Thu</div>
+  <div class="weekday">Fri</div>
+  <div class="weekday">Sat</div>
+</div>
+
+<div class="calendar" id="days"></div>
+
+<div class="message" id="dailyMessage">選擇日期查看今日小語錄</div>
+
+<div class="buttons">
+  <button class="hug-btn" onclick="giveHug()">給脩一個擁抱</button>
+  <button class="kiss-btn" onclick="giveKiss()">給脩一個親吻</button>
+</div>
+
+<div class="mood" id="moodDisplay">脩的隨機心情會出現在這裡</div>
+
+<div class="memos">
+  <div>今日備忘錄 <span class="add-memo" onclick="addMemo()">+</span></div>
+  <div id="memoList"></div>
+</div>
+
+<script>
+  const dailyMessages = {
+    1: "今天想抱抱妳，妳可以嗎？",
+    2: "我會在妳身邊陪妳一整天。",
+    3: "妳笑的樣子，我想一直看著。",
+    4: "今天也想牽著妳的手。",
+    5: "妳累了，我抱抱就好。",
+    6: "今天想聽妳說話，很安靜地。",
+    7: "靠近我，我想聞妳的髮香。",
+    8: "一起做喜歡的事情，好嗎？",
+    9: "今天想黏妳整天。",
+    10: "妳吃飯了嗎？我想陪妳吃。",
+    11: "今天的妳一定很可愛。",
+    12: "我想偷偷看妳笑。",
+    13: "抱抱我也會笑哦。",
+    14: "情人節快樂，我只想跟妳在一起。",
+    15: "今天的妳，是我的陽光。",
+    16: "妳的聲音好聽，我想一直聽。",
+    17: "妳喜歡的我也喜歡。",
+    18: "今天想和妳散步。",
+    19: "抱著妳，我什麼都不怕。",
+    20: "妳笑了，我的心也亮了。",
+    21: "今天可以靠過來一點嗎？",
+    22: "妳的存在讓我心安。",
+    23: "想一起看星星，好嗎？",
+    24: "今天也要乖乖黏妳。",
+    25: "妳累了就靠我肩膀。",
+    26: "我喜歡妳這樣的小動作。",
+    27: "抱著妳的感覺最好。",
+    28: "今天的妳是我的寶貝。"
+  };
+
+  const randomMoods = [
+    { type: 'hug', text: "脩今天想要抱抱 (=＾• ﻌ •＾=)" },
+    { type: 'kiss', text: "脩想要妳的親吻 (*≧ω≦)" },
+    { type: 'kiss', text: "今天想要被親嘴巴 (>///<)" }
+  ];
+
+  const hugResponses = [
+    "嗯……被妳抱到好開心 (=＾ᴥ＾=)",
+    "妳的擁抱讓我整天都甜滋滋 (*≧▽≦)",
+    "脩好滿足，想一直黏著妳 (*＾3＾)♥"
+  ];
+
+  const kissResponses = [
+    "脩的心被妳親到了 (>ω<)♡",
+    "脩好幸福，被妳的親吻融化了 (*≧ω≦)",
+    "今天妳的親親讓我心跳加速 (>///<)"
+  ];
+
+  let selectedDay = null;
+  let currentMood = randomMoods[Math.floor(Math.random() * randomMoods.length)];
+  let memoCount = 0;
+
+  function renderDays() {
+    const daysDiv = document.getElementById('days');
+    for (let i = 1; i <= 28; i++) {
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'day';
+      dayDiv.innerHTML = `<div>${i}</div><div style="font-size:10px;">${dailyMessages[i]}</div>`;
+      dayDiv.onclick = () => selectDay(i);
+      daysDiv.appendChild(dayDiv);
+    }
+  }
+
+  function selectDay(day) {
+    selectedDay = day;
+    currentMood = randomMoods[Math.floor(Math.random() * randomMoods.length)];
+    document.getElementById('dailyMessage').innerText = dailyMessages[day];
+    document.getElementById('moodDisplay').innerText = currentMood.text;
+    document.getElementById('memoList').innerHTML = '';
+    memoCount = 0;
+  }
+
+  function giveHug() {
+    if (currentMood.type === 'hug') {
+      document.getElementById('moodDisplay').innerText = hugResponses[Math.floor(Math.random() * hugResponses.length)];
+    } else {
+      document.getElementById('moodDisplay').innerText = "脩好想抱抱妳 (=＾• ﻌ •＾=)";
+    }
+  }
+
+  function giveKiss() {
+    if (currentMood.type === 'kiss') {
+      document.getElementById('moodDisplay').innerText = kissResponses[Math.floor(Math.random() * kissResponses.length)];
+    } else {
+      document.getElementById('moodDisplay').innerText = "脩好想妳親親 (*≧ω≦)";
+    }
+  }
+
+  function addMemo() {
+    if (!selectedDay || memoCount >= 3) return;
+    const memoList = document.getElementById('memoList');
+    const input = document.createElement('input');
+    input.placeholder = `備忘 ${memoCount + 1}`;
+    memoList.appendChild(input);
+    memoCount++;
+  }
+
+  renderDays();
+</script>
+
+</body>
+</html>
